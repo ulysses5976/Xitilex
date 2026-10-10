@@ -33,6 +33,16 @@ workbench, writes changes back to those files, and lets Claude work on the same 
 - **Google Calendar** — one-way sync of hearings and deadlines; rescheduling updates the original event.
 - **Native window** — tabs, multiple windows, zoom, collapsible sidebar, several themes. Works across several PCs via Google Drive.
 
+## Screenshots
+
+| Case page | Claude reads a new judgment and records the appeal deadline |
+|---|---|
+| ![Case page](docs/images/case.jpg) | ![Claude](docs/images/claude.jpg) |
+| **Statutory deadline calculator** | **Conflict check when opening a case** |
+| ![Deadline calculator](docs/images/deadline.jpg) | ![Conflict check](docs/images/conflict.jpg) |
+| **Hearing calendar** | **Paper theme** |
+| ![Calendar](docs/images/calendar.jpg) | ![Paper theme](docs/images/today-paper.jpg) |
+
 ## Requirements
 
 Windows 10/11, Python 3.10+. Optional: Claude Code (logged in), Google Drive for desktop, a Google Cloud OAuth client for calendar sync.

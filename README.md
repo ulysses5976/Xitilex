@@ -13,6 +13,9 @@
 
 ▶ **[觀看展示影片（73 秒）](docs/xitilex-demo.mp4)**
 
+https://github.com/user-attachments/assets/08ab6da7-5fcd-414c-a4af-6c8b8434087c
+
+
 > 畫面中的案件、當事人與內容全部是虛構的示範資料。
 
 ## 為什麼做這個

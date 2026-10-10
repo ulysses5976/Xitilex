@@ -12,6 +12,8 @@ The interface is in Traditional Chinese and the deadline rules follow Taiwanese 
 
 ![Today overview](docs/images/today.jpg)
 
+▶ **[Watch the demo video (73 s)](docs/xitilex-demo.mp4)**
+
 > All cases and names in the screenshots are fictional demo data.
 
 ## How it works

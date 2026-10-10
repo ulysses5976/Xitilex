@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>律法夕惕者 Xitilex</title>
+<link rel="icon" href="/static/xitilex.png">
+<link rel="alternate icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%231f2a3a'/%3E%3Cpath d='M14.6 4.6a7.6 7.6 0 1 0 4.6 11.7A6.2 6.2 0 0 1 14.6 4.6z' fill='%23e8c66a'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/static/style.css">
+<link rel="stylesheet" href="/static/desk.css">
+<link rel="stylesheet" href="/static/today.css">
+</head>
+<body>
+<header class="topbar">
+  <button class="brand" id="brandBtn" title="Vigilantibus, non dormientibus, iura subveniunt.">
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M15.5 3.2a8.8 8.8 0 1 0 5.3 13.6A7.2 7.2 0 0 1 15.5 3.2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="17.6" cy="7.4" r="1.1" fill="currentColor"/></svg>
+    <span>律法夕惕者</span><em>Xitilex</em>
+  </button>
+  <nav class="tabs" role="tablist">
+    <button class="tab" data-view="today" role="tab" aria-selected="false">今日</button>
+    <button class="tab active" data-view="cases" role="tab" aria-selected="true">案件</button>
+    <button class="tab" data-view="calendar" role="tab" aria-selected="false">庭期月曆</button>
+    <button class="tab" data-view="todos" role="tab" aria-selected="false">待辦總覽</button>
+  </nav>
+  <div class="topbar-right">
+    <span id="rootInfo" class="muted small"></span>
+    <button id="gcalChip" class="btn ghost gcal-chip" title="Google 日曆同步設定"><span class="dot"></span><span class="full">Google 日曆</span><span class="short">日曆</span></button>
+    <button id="themeBtn" class="btn ghost" title="配色、字體、字級"><svg class="icon" aria-hidden="true"><use href="/static/icons.svg#palette"/></svg>外觀</button>
+    <button id="rescan" class="btn ghost" title="重新掃描雲端硬碟"><svg class="icon" aria-hidden="true"><use href="/static/icons.svg#refresh"/></svg><span class="full">重新掃描</span><span class="short">掃描</span></button>
+    <button id="toggleSide" class="btn ghost" title="顯示／隱藏左邊的案件清單（Ctrl+B）"><svg class="icon" aria-hidden="true"><use href="/static/icons.svg#panel"/></svg><span class="full">案件清單</span><span class="short">清單</span></button>
+    <button id="toggleClaude" class="btn ghost" title="顯示／隱藏 Claude 面板"><svg class="icon" aria-hidden="true"><use href="/static/icons.svg#spark"/></svg><span class="full">Claude 面板</span><span class="short">Claude</span></button>
+    <button id="moreBtn" class="btn ghost more-btn" title="新分頁、新視窗、關於" aria-haspopup="menu">⋯</button>
+  </div>
+</header>
+
+<div id="viewCases" class="layout">
+  <aside class="sidebar">
+    <button id="sideRail" class="side-rail" title="展開案件清單（Ctrl+B）"><span class="rail-arrow">»</span><span class="rail-text">案件清單</span></button>
+    <div class="side-tools">
+      <div class="side-top">
+        <span class="side-heading">案件清單</span>
+        <button id="newCaseBtn" class="btn primary" title="依範本開新案">＋ 開新案</button>
+        <button id="sideCollapse" class="btn ghost side-collapse" title="收起案件清單（Ctrl+B）">«</button>
+      </div>
+      <input id="search" type="search" aria-label="搜尋案件" placeholder="搜尋代號、當事人、案由…" autocomplete="off" title="按 / 快速搜尋">
+      <button id="filterToggle" class="filter-toggle" aria-expanded="true" title="展開／收合篩選與排序">
+        <span class="caret">▾</span><span class="ft-label">篩選與排序</span><span id="filterSummary" class="ft-summary"></span>
+      </button>
+      <div id="filterBody" class="filter-body">
+        <div id="statusFilter" class="chips"></div>
+        <div id="typeFilter" class="chips types" aria-label="案件種類"></div>
+        <div class="side-row">
+          <select id="sortSel" aria-label="排序">
+            <option value="recent">最近更動</option>
+            <option value="type">依種類分組</option>
+            <option value="code">依代號</option>
+          </select>
+          <select id="groupFilter" aria-label="資料夾"></select>
+        </div>
+      </div>
+    </div>
+    <div class="resizer" id="sideResizer" title="拖曳調整左欄寬度；點兩下恢復預設" role="separator" aria-orientation="vertical"></div>
+    <div id="caseCount" class="muted small side-count"></div>
+    <ul id="caseList" class="case-list"></ul>
+  </aside>
+
+  <main id="detail" class="detail">
+    <div class="empty-state">
+      <p>從左邊選一件案件</p>
+      <p class="muted small">狀態與待辦會寫進該案資料夾的「_案件卡.md」，Claude 也讀寫同一個檔。</p>
+    </div>
+  </main>
+
+  <section id="claude" class="claude">
+    <div class="resizer left" id="claudeResizer" title="拖曳調整 Claude 欄寬度；點兩下恢復預設" role="separator" aria-orientation="vertical"></div>
+    <div class="claude-head">
+      <strong><svg class="icon" aria-hidden="true"><use href="/static/icons.svg#spark"/></svg>Claude</strong>
+      <button id="toolsBtn" class="btn ghost small" title="可用的 skill 與連接器"><span class="dot" id="toolsDot"></span>工具</button>
+      <button id="newChat" class="btn ghost small" title="開始新對話">新對話</button>
+      <button id="closeClaude" class="btn ghost small" aria-label="收起 Claude 面板" title="收起 Claude 面板"><svg class="icon" aria-hidden="true"><use href="/static/icons.svg#close"/></svg></button>
+      <div class="seg" id="scopeSeg" role="tablist" aria-label="Claude 處理範圍">
+        <button data-scope="case" title="只處理目前選取的這一件">本案</button>
+        <button data-scope="list" title="處理左邊目前篩選出來的案件">目前清單</button>
+        <button data-scope="all" title="處理全部案件">全部案件</button>
+      </div>
+    </div>
+    <div id="claudeCase" class="claude-scope muted small"></div>
+    <div id="chat" class="chat">
+      <div class="chat-hint muted small">選定案件後，Claude 會以該案資料夾為工作目錄，可以直接讀卷宗、寫整理文件、更新案件卡。</div>
+    </div>
+    <div id="quick" class="quick"></div>
+    <div id="filesWarn" class="files-warn" hidden></div>
+    <form id="askForm" class="ask">
+      <textarea id="askInput" rows="3" placeholder="請 Claude 做事，例如：整理對造最新書狀的主張（Ctrl+Enter 送出）" disabled></textarea>
+      <div id="claudeStatus" class="muted small claude-status"></div>
+      <details class="claude-options"><summary>模型與進階設定</summary><div class="ask-row">
+        <label class="mini">模型<select id="modelSel"></select></label>
+        <label class="mini">思考強度<select id="effortSel"></select></label>
+        <label class="mini files-toggle" title="勾選後，Claude 可以刪除、搬移、改名檔案（刪除的會先放進「_待刪除」資料夾）。換案件、換範圍或重開程式會自動取消。"><input type="checkbox" id="allowFiles">允許整理檔案</label>
+      </div></details>
+      <div class="ask-row send-row">
+        <button id="stopBtn" type="button" class="btn ghost small" hidden>停止</button>
+        <button id="askBtn" type="submit" class="btn primary small" disabled>送出</button>
+      </div>
+    </form>
+  </section>
+</div>
+
+<div id="viewCalendar" class="cal-view" hidden>
+  <div class="cal-main">
+    <div class="cal-head">
+      <button class="btn ghost" id="calPrev" title="上個月">‹</button>
+      <h2 id="calTitle"></h2>
+      <button class="btn ghost" id="calNext" title="下個月">›</button>
+      <button class="btn small" id="calToday">今天</button>
+      <span class="legend"><i class="lg hearing"></i>庭期 <i class="lg deadline"></i>期限 <i class="lg done"></i>已完成</span>
+      <span class="cal-actions">
+        <span id="syncAllInfo" class="muted small"></span>
+        <button class="btn small" id="syncAll">全部同步到 Google 日曆</button>
+      </span>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+  </div>
+  <aside class="agenda">
+    <h3>接下來 60 天</h3>
+    <div id="agenda"></div>
+  </aside>
+</div>
+
+<div id="viewToday" class="todos-view today-view" hidden>
+  <div class="today-head">
+    <h2>今日總覽</h2><span class="today-date" id="todayDate"></span>
+    <button class="btn ghost small" id="todayRefresh" title="重新讀取所有案件卡"><svg class="icon" aria-hidden="true"><use href="/static/icons.svg#refresh"/></svg>重新整理</button>
+  </div>
+  <div class="priority-strip today-stats" id="todayStats"></div>
+  <div class="today-grid" id="todayGrid"></div>
+</div>
+
+<div id="viewTodos" class="todos-view" hidden>
+  <div class="todos-head">
+    <h2>待辦總覽</h2>
+    <label class="small"><input type="checkbox" id="showDone"> 顯示已完成</label>
+  </div>
+  <p class="muted small">彙整所有已建立案件卡的案件。依期限排序，逾期標紅、七日內標黃。</p>
+  <table class="todo-table">
+    <thead><tr><th></th><th>期限</th><th>案件</th><th>事項</th><th>狀態</th></tr></thead>
+    <tbody id="todoRows"></tbody>
+  </table>
+</div>
+
+<dialog id="newCaseDlg" class="dlg">
+  <form method="dialog" id="newCaseForm">
+    <h2>開新案</h2>
+    <p class="muted small">依範本複製整套資料夾到雲端硬碟，並建立案件卡。</p>
+    <div class="dlg-grid">
+      <label for="ncGroup">放在</label><select id="ncGroup"></select>
+      <label for="ncTpl">資料夾範本</label><select id="ncTpl"></select>
+      <label for="ncCode">代號</label><input id="ncCode" autocomplete="off" placeholder="例如 CV021、20261005">
+      <label for="ncClient">當事人</label><input id="ncClient" autocomplete="off" placeholder="例如 王小明">
+      <label for="ncOpponent">對造</label><input id="ncOpponent" autocomplete="off" placeholder="可空白；多人用「、」分開（會一併做利益衝突檢查）">
+      <label for="ncCause">案由</label><input id="ncCause" autocomplete="off" placeholder="例如 給付資遣費（可空白）">
+      <label for="ncStatus">狀態</label><select id="ncStatus"></select>
+      <label for="ncRetained">委任日</label><input id="ncRetained" type="date">
+    </div>
+    <div class="conflict-box" id="ncConflict"></div>
+    <div class="nc-preview" id="ncPreview"></div>
+    <div class="dlg-err" id="ncErr"></div>
+    <div class="dlg-actions">
+      <button class="btn" value="cancel" formnovalidate>取消</button>
+      <button class="btn primary" id="ncCreate" value="default">建立</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="gcalDlg" class="dlg">
+  <form method="dialog" id="gcalForm">
+    <h2>Google 日曆同步</h2>
+    <p class="muted small">案件卡裡的庭期與有期限的待辦，單向同步到 Google 日曆。案件卡是正本：要改請在系統裡改，直接改日曆會在下次同步時被覆蓋。</p>
+    <div id="gcalBody"></div>
+    <div class="dlg-err" id="gcalErr"></div>
+    <div class="dlg-actions">
+      <button class="btn" value="cancel" formnovalidate>關閉</button>
+      <button class="btn primary" id="gcalSave" value="default">儲存設定</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="themeDlg" class="dlg wide">
+  <form method="dialog">
+    <h2>外觀</h2>
+    <div id="themeBody"></div>
+    <div class="dlg-actions">
+      <button type="button" class="btn ghost" id="themeReset" style="margin-right:auto">全部恢復預設</button>
+      <button class="btn" value="cancel" formnovalidate>取消</button>
+      <button class="btn primary" value="save">儲存</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="toolsDlg" class="dlg wide">
+  <form method="dialog">
+    <h2>Claude 可用的工具</h2>
+    <div id="toolsBody"></div>
+    <div class="dlg-actions">
+      <button type="button" class="btn ghost" id="toolsRefresh" style="margin-right:auto">重新檢查（約十幾秒）</button>
+      <button class="btn" value="cancel" formnovalidate>關閉</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="aboutDlg" class="dlg about">
+  <form method="dialog">
+    <div class="about-mark"><svg viewBox="0 0 24 24" width="44" height="44" aria-hidden="true"><path d="M15.5 3.2a8.8 8.8 0 1 0 5.3 13.6A7.2 7.2 0 0 1 15.5 3.2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="17.6" cy="7.4" r="1.1" fill="currentColor"/></svg></div>
+    <h2>律法夕惕者 <em>Xitilex</em></h2>
+    <p class="about-quote">Vigilantibus, non dormientibus, iura subveniunt.<br><span>法律幫助夕惕者，不幫助沉睡的人。</span></p>
+    <p class="about-quote">君子終日乾乾，夕惕若厲。<br><span>——《易經・乾卦》</span></p>
+    <p class="muted small">Xitilex：「夕惕」（xītì）＋拉丁文 lex（法律）。<br>案件、卷宗、期日與 Claude，同在一張案頭。</p>
+    <p class="muted small">© 2026 無名小律師（楊朝淵律師）・以 MIT 授權開源</p>
+    <div class="dlg-actions"><button class="btn" value="cancel">關閉</button></div>
+  </form>
+</dialog>
+
+<div id="ctxMenu" class="ctx" hidden></div>
+<div id="moreMenu" class="ctx" hidden role="menu">
+  <div id="moreOverflow"></div>
+  <button data-more="tab">新分頁<span class="kbd">Ctrl+T</span></button>
+  <button data-more="window">新視窗<span class="kbd">Ctrl+N</span></button>
+  <button data-more="browser">在瀏覽器中開啟</button>
+  <div class="ctx-sep"></div>
+  <button data-more="deadline">法定期間計算…</button>
+  <button data-more="conflict">利益衝突檢查…</button>
+  <div class="ctx-sep"></div>
+  <button data-more="about">關於律法夕惕者</button>
+</div>
+<dialog id="deadlineDlg" class="dlg dl-dlg">
+  <form method="dialog">
+    <h2>法定期間計算</h2>
+    <p class="muted small" id="dlCase"></p>
+    <div class="dlg-grid">
+      <label for="dlKind">期間種類</label><select id="dlKind"></select>
+      <label for="dlN" id="dlNLabel" hidden>天數</label><input id="dlN" type="number" min="1" max="999" hidden>
+      <label for="dlBase" id="dlBaseLabel">送達日</label><input id="dlBase" type="date">
+      <label for="dlServe" id="dlServeLabel">送達方式</label><div id="dlServeRow"><select id="dlServe"></select></div>
+      <label for="dlTravel">在途期間</label>
+      <div class="dl-inline"><input id="dlTravel" type="number" min="0" max="60" value="0"> 日
+        <span class="muted small">有住居法院所在地的訴訟代理人時不扣除（民訴第162條、刑訴第66條）</span></div>
+    </div>
+    <div id="dlResult" class="dl-result"></div>
+    <div id="dlAddBox" class="dl-add">
+      <div class="dlg-grid">
+        <label for="dlText">待辦內容</label><div class="dl-inline"><span id="dlSubWrap"></span><input id="dlText" autocomplete="off"></div>
+        <label>提前提醒</label>
+        <div class="dl-inline"><label class="dl-check"><input type="checkbox" id="dlRemind">另加一筆提前</label>
+          <input id="dlRemindN" type="number" min="1" max="60" value="3"> 天的待辦：<input id="dlRemindText" autocomplete="off"></div>
+      </div>
+    </div>
+    <div class="dl-hol muted small" id="dlHolInfo"></div>
+    <div id="dlExtraBox" class="dl-extra" hidden>
+      <ul id="dlExtraList"></ul>
+      <div class="dl-inline"><input type="date" id="dlExtraDate"><input id="dlExtraReason" placeholder="原因，例如 颱風停止上班（臺北市）">
+        <button type="button" class="btn small" id="dlExtraAdd">加入</button></div>
+    </div>
+    <div class="dlg-err" id="dlErr"></div>
+    <div class="dlg-actions">
+      <button class="btn" value="cancel" formnovalidate>關閉</button>
+      <button class="btn primary" id="dlAddBtn" value="default">加入待辦</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="conflictDlg" class="dlg cf-dlg">
+  <form method="dialog">
+    <h2>利益衝突檢查</h2>
+    <p class="muted small">比對所有案件的當事人、對造（案件卡）、子案對造，以及案件卡內文。多個名字用「、」或換行分開。</p>
+    <div class="dlg-grid">
+      <label for="cfClient">當事人</label><textarea id="cfClient" rows="2" placeholder="例如 王小明、台灣某某股份有限公司"></textarea>
+      <label for="cfOpp">對造</label><textarea id="cfOpp" rows="2" placeholder="可空白"></textarea>
+    </div>
+    <div class="conflict-box" id="cfResult"></div>
+    <div class="dlg-actions">
+      <button class="btn" value="cancel" formnovalidate>關閉</button>
+      <button class="btn primary" value="default">檢查</button>
+    </div>
+  </form>
+</dialog>
+
+<div id="toast" class="toast" hidden></div>
+<script src="/static/theme.js"></script>
+<script src="/static/deadline.js"></script>
+<script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>律法夕惕者 Xitilex</title>
+<link rel="icon" href="/static/xitilex.png">
+<style>
+  /* 分頁外殼：每個分頁是一個完整的系統畫面（iframe）。只有一個分頁時不顯示分頁列。 */
+  :root { --bar: #1c1d20; --tab: #26282c; --tab-on: #34373d; --fg: #d9d6cf; --muted: #8f8a82; --accent: #e8c66a; }
+  @media (prefers-color-scheme: light) {
+    :root { --bar: #e7e4de; --tab: #efece6; --tab-on: #ffffff; --fg: #2a2723; --muted: #7a756c; --accent: #2f5d8a; }
+  }
+  html, body { height: 100%; margin: 0; background: var(--bar); overflow: hidden;
+    font: 13px "Microsoft JhengHei UI", "Microsoft JhengHei", "Segoe UI", sans-serif; color: var(--fg); }
+  body { display: flex; flex-direction: column; }
+  #tabbar { display: flex; align-items: flex-end; gap: 2px; padding: 4px 6px 0; background: var(--bar); flex: none; overflow-x: auto; }
+  body.single #tabbar { display: none; }
+  .tab { display: flex; align-items: center; gap: 6px; max-width: 220px; min-width: 90px; padding: 5px 8px 6px 10px;
+    background: var(--tab); border-radius: 7px 7px 0 0; cursor: pointer; user-select: none; color: var(--muted); }
+  .tab.on { background: var(--tab-on); color: var(--fg); box-shadow: inset 0 2px 0 var(--accent); }
+  .tab .t { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tab .x { border: 0; background: none; color: inherit; cursor: pointer; border-radius: 4px; padding: 0 4px; font-size: 13px; line-height: 16px; }
+  .tab .x:hover { background: rgba(127,127,127,.25); }
+  #newTab { border: 0; background: none; color: var(--muted); font-size: 17px; cursor: pointer; padding: 2px 8px 5px; border-radius: 6px; }
+  #newTab:hover { color: var(--fg); background: rgba(127,127,127,.2); }
+  #frames { flex: 1; position: relative; min-height: 0; }
+  #frames iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: none; background: var(--tab-on); }
+  #frames iframe.on { display: block; }
+</style>
+</head>
+<body class="single">
+<div id="tabbar" role="tablist"><button id="newTab" title="新分頁（Ctrl+T）">＋</button></div>
+<div id="frames"></div>
+<script>
+"use strict";
+/* 律法夕惕者 Xitilex：分頁外殼。© 2026 無名小律師（楊朝淵律師）. Released under the MIT License. */
+const tabs = [];            // {id, frame, el}
+let active = null, seq = 0;
+
+function appUrl(params) {
+  const q = new URLSearchParams(params || {}).toString();
+  return "/app" + (q ? "?" + q : "");
+}
+
+function newTab(params, focus = true) {
+  const id = ++seq;
+  const frame = document.createElement("iframe");
+  frame.src = appUrl(params);
+  frame.dataset.id = id;
+  document.getElementById("frames").appendChild(frame);
+  const el = document.createElement("div");
+  el.className = "tab"; el.setAttribute("role", "tab");
+  el.innerHTML = '<span class="t">律法夕惕者</span><button class="x" title="關閉分頁（Ctrl+W）">✕</button>';
+  el.onclick = e => { if (e.target.closest(".x")) closeTab(id); else activate(id); };
+  el.onauxclick = e => { if (e.button === 1) closeTab(id); };     // 中鍵關閉
+  document.getElementById("tabbar").insertBefore(el, document.getElementById("newTab"));
+  tabs.push({ id, frame, el });
+  frame.addEventListener("load", () => { syncTitle(id); if (active === id) syncAppearance(id); });
+  if (focus || !active) activate(id);
+  layout();
+  return id;
+}
+
+function activate(id) {
+  active = id;
+  for (const t of tabs) { const on = t.id === id; t.frame.classList.toggle("on", on); t.el.classList.toggle("on", on); }
+  const t = tabs.find(x => x.id === id);
+  if (t) { syncTitle(id); syncAppearance(id); try { t.frame.contentWindow.focus(); } catch { } }
+}
+
+function closeTab(id) {
+  const i = tabs.findIndex(t => t.id === id);
+  if (i < 0) return;
+  if (tabs.length === 1) { closeWindow(); return; }
+  const [t] = tabs.splice(i, 1);
+  t.frame.remove(); t.el.remove();
+  if (active === id) activate(tabs[Math.min(i, tabs.length - 1)].id);
+  layout();
+}
+
+function cycle(dir) {
+  if (tabs.length < 2) return;
+  const i = tabs.findIndex(t => t.id === active);
+  activate(tabs[(i + dir + tabs.length) % tabs.length].id);
+}
+
+function syncTitle(id) {
+  const t = tabs.find(x => x.id === id);
+  if (!t) return;
+  let title = "律法夕惕者";
+  try { title = t.frame.contentDocument.title || title; } catch { }
+  t.el.querySelector(".t").textContent = title.replace(" — 律法夕惕者 Xitilex", "").replace("律法夕惕者 Xitilex", "律法夕惕者");
+  t.el.title = title;
+  if (id === active) document.title = title;
+}
+
+function layout() { document.body.classList.toggle("single", tabs.length < 2); }
+
+function syncAppearance(id) {
+  const t = tabs.find(x => x.id === id);
+  if (!t) return;
+  try {
+    const colors = getComputedStyle(t.frame.contentDocument.documentElement);
+    for (const [shell, app] of [["bar", "bg"], ["tab", "panel-2"], ["tab-on", "panel"], ["fg", "text"], ["muted", "muted"], ["accent", "accent"]]) {
+      const value = colors.getPropertyValue("--" + app).trim();
+      if (value) document.documentElement.style.setProperty("--" + shell, value);
+    }
+  } catch { }
+}
+
+/* 新視窗：原生視窗模式交給程式開；在一般瀏覽器裡就用瀏覽器的新視窗 */
+async function newWindow(params) {
+  try {
+    const r = await fetch("/api/window/new", { method: "POST", headers: { "Content-Type": "application/json" },
+                                                body: JSON.stringify({ params: params || {} }) });
+    if (r.ok && (await r.json()).ok) return;
+  } catch { }
+  window.open("/" + (params && Object.keys(params).length ? "?" + new URLSearchParams(params) : ""), "_blank",
+              "width=1400,height=900");
+}
+
+function closeWindow() {
+  // 原生視窗：由程式關掉「這一個」視窗；一般瀏覽器：關分頁
+  if (window.pywebview && window.pywebview.api && window.pywebview.api.close_window) window.pywebview.api.close_window();
+  else window.close();
+}
+
+/* 系統畫面（iframe）送上來的指令 */
+window.addEventListener("message", e => {
+  if (e.origin !== location.origin) return;
+  const m = e.data || {};
+  const from = tabs.find(t => t.frame.contentWindow === e.source);
+  if (m.type === "title" && from) syncTitle(from.id);
+  else if (m.type === "appearance" && from && from.id === active) syncAppearance(from.id);
+  else if (m.type === "newTab") newTab(m.params, m.focus !== false);
+  else if (m.type === "newWindow") newWindow(m.params);
+  else if (m.type === "closeTab" && from) closeTab(from.id);
+  else if (m.type === "cycleTab") cycle(m.dir || 1);
+  else if (m.type === "gotoTab" && tabs[m.index]) activate(tabs[m.index].id);
+});
+
+document.getElementById("newTab").onclick = () => newTab();
+/* 焦點在分頁列時也能縮放（系統畫面裡的快捷鍵由 app.js 處理） */
+document.addEventListener("keydown", e => {
+  if (!(e.ctrlKey || e.metaKey) || e.altKey || !(window.pywebview && window.pywebview.api && window.pywebview.api.zoom)) return;
+  const dir = (e.key === "+" || e.key === "=" || e.code === "NumpadAdd") ? 1
+            : (e.key === "-" || e.key === "_" || e.code === "NumpadSubtract") ? -1
+            : (e.key === "0" || e.code === "Numpad0") ? 2 : 0;
+  if (dir) { e.preventDefault(); window.pywebview.api.zoom(dir); }
+}, true);
+document.addEventListener("keydown", e => {        // 焦點在分頁列上時的快捷鍵
+  if (!e.ctrlKey) return;
+  const k = e.key.toLowerCase();
+  if (k === "t") { e.preventDefault(); newTab(); }
+  else if (k === "n") { e.preventDefault(); newWindow(); }
+  else if (k === "w") { e.preventDefault(); closeTab(active); }
+  else if (k === "tab") { e.preventDefault(); cycle(e.shiftKey ? -1 : 1); }
+});
+
+// 開啟時帶的參數（例如 ?case=…）交給第一個分頁
+newTab(Object.fromEntries(new URLSearchParams(location.search)));
+</script>
+</body>
+</html>

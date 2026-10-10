@@ -1,0 +1,16 @@
+# 個人設定與資料（不要公開）
+config.json
+data/credentials.json
+data/chats/
+data/inbox/
+data/holidays/extra.json
+*.saving
+
+# 編譯產物（用 launcher\build.cmd 產生）
+*.exe
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/

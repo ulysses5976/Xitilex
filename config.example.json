@@ -1,0 +1,109 @@
+{
+  "root": "{drive}\\案件",
+  "owner_name": "",
+  "host": "127.0.0.1",
+  "port": 8788,
+  "card_name": "_案件卡.md",
+  "max_depth": 3,
+  "exclude_dirs": [
+    "各種案件資料夾範本"
+  ],
+  "closed_groups": [],
+  "statuses": [
+    "進行中",
+    "待開庭",
+    "待判決",
+    "暫停",
+    "已結案"
+  ],
+  "claude_bin": "",
+  "claude_model": "",
+  "claude_permission_mode": "acceptEdits",
+  "claude_allowed_tools": [
+    "Read",
+    "Glob",
+    "Grep",
+    "Write",
+    "Edit",
+    "Skill",
+    "TodoWrite",
+    "Task",
+    "ToolSearch",
+    "WebSearch",
+    "WebFetch",
+    "Bash",
+    "PowerShell",
+    "mcp__judicial-tw"
+  ],
+  "claude_timeout_sec": 900,
+  "template_dir": "各種案件資料夾範本",
+  "google": {
+    "enabled": false,
+    "auto_sync": true,
+    "calendar_hearing": "",
+    "calendar_deadline": "",
+    "timezone": "Asia/Taipei",
+    "hearing_minutes": 60,
+    "reminders_hearing": [
+      1440,
+      120
+    ],
+    "reminders_deadline": [
+      3780,
+      900
+    ],
+    "previous_calendars": []
+  },
+  "ui": {
+    "theme": {
+      "preset": "forest-desk",
+      "custom": {},
+      "font": "微軟正黑體",
+      "fontCustom": "",
+      "size": 16
+    },
+    "claude": {
+      "model": "",
+      "effort": ""
+    }
+  },
+  "vault_path": "",
+  "claude_disallowed_tools": [
+    "Bash(rm *)",
+    "Bash(rmdir *)",
+    "Bash(del *)",
+    "Bash(erase *)",
+    "Bash(rd *)",
+    "Bash(mv *)",
+    "Bash(move *)",
+    "Bash(ren *)",
+    "Bash(rename *)",
+    "Bash(unlink *)",
+    "Bash(shred *)",
+    "Bash(git push *)",
+    "Bash(git reset *)",
+    "Bash(git clean *)",
+    "Bash(git checkout -- *)",
+    "PowerShell(Remove-Item *)",
+    "PowerShell(remove-item *)",
+    "PowerShell(Move-Item *)",
+    "PowerShell(move-item *)",
+    "PowerShell(Rename-Item *)",
+    "PowerShell(rename-item *)",
+    "PowerShell(Clear-Content *)",
+    "PowerShell(clear-content *)",
+    "PowerShell(Clear-Item *)",
+    "PowerShell(clear-item *)",
+    "PowerShell(rm *)",
+    "PowerShell(del *)",
+    "PowerShell(erase *)",
+    "PowerShell(rd *)",
+    "PowerShell(rmdir *)",
+    "PowerShell(ri *)",
+    "PowerShell(mv *)",
+    "PowerShell(move *)",
+    "PowerShell(mi *)",
+    "PowerShell(ren *)",
+    "PowerShell(rni *)"
+  ]
+}

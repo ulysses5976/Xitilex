@@ -1,0 +1,172 @@
+/* 案頭版面。互動元件與案件卡的資料格式由原前端維持。 */
+:root {
+  --top-h: 76px;
+  --font-heading: "Noto Serif TC", "Source Han Serif TC", "思源宋體", PMingLiU, serif;
+}
+.icon { width: 17px; height: 17px; flex: none; vertical-align: -3px; fill: none; stroke: currentColor; }
+button .icon { pointer-events: none; }
+button:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.topbar { height: var(--top-h); gap: 24px; padding: 0 22px; }
+button.brand { font-family: var(--font-heading); font-size: 1.18rem; gap: 10px; }
+.brand svg { width: 27px; height: 27px; color: var(--gold, var(--accent)); }
+.brand em { font-size: .76rem; font-weight: 400; letter-spacing: .06em; }
+.tab { padding: 9px 14px; border-radius: 6px; }
+.topbar-right { gap: 4px; }
+.topbar-right .btn { border-color: transparent; padding: 7px 9px; }
+.topbar-right .btn:hover, .topbar-right .btn.on { background: var(--accent-soft); color: var(--accent); }
+#rootInfo { display: none; }
+.btn { border-radius: 6px; padding: 7px 12px; }
+.btn .icon { margin-right: 4px; }
+.layout { grid-template-columns: var(--side-w, 272px) minmax(0, 1fr) var(--claude-w, 340px); }
+.layout.no-claude { grid-template-columns: var(--side-w, 272px) minmax(0, 1fr); }
+.layout.no-side { grid-template-columns: 28px minmax(0, 1fr) var(--claude-w, 340px); }
+.layout.no-side.no-claude { grid-template-columns: 28px minmax(0, 1fr); }
+.sidebar { background: var(--panel); min-width: 0; }
+.side-tools { padding: 20px 16px 8px; gap: 12px; }
+.side-top { justify-content: space-between; gap: 5px; }
+.side-heading { font-family: var(--font-heading); font-size: 1.08rem; font-weight: 700; margin-right: auto; }
+.side-top .btn { font-size: .8rem; padding: 5px 8px; }
+.side-collapse { width: 25px; }
+#search { padding: 9px 10px; font-size: .86rem; background: var(--bg); }
+.filter-toggle { font-size: .82rem; padding: 6px 0; flex-wrap: wrap; }
+.ft-summary { max-width: 100%; overflow-wrap: anywhere; }
+.side-count { padding: 8px 17px 12px; font-size: .75rem; }
+.case-list { padding: 0 10px 18px; }
+.case-item { padding: 13px 12px; border-radius: 7px; margin-bottom: 4px; }
+.case-item.active { background: var(--accent-soft); border-color: transparent; box-shadow: inset 3px 0 var(--accent); }
+.ci-top { gap: 6px; }
+.ci-name { font-size: .96rem; }
+.ci-code { margin-left: auto; font-size: .72rem; }
+.ci-cause { color: var(--muted); font-size: .8rem; margin: 5px 0 9px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.ci-sub { gap: 7px; font-size: .75rem; }
+.ci-type { margin-left: 0; font-size: .73rem; }
+.pin .icon { width: 13px; height: 13px; color: var(--gold, var(--accent)); }
+.pill { font-size: .72rem; padding: 2px 8px; line-height: 18px; }
+.list-head { letter-spacing: .06em; font-size: .75rem; padding: 10px 12px; }
+.detail { padding: 28px 32px 48px; container-type: inline-size; }
+.case-head { flex-wrap: wrap; align-items: center; gap: 16px 24px; margin-bottom: 23px; }
+.case-heading { flex: 1 1 240px; min-width: 0; }
+.case-head .code { font-size: .75rem; letter-spacing: .05em; margin-bottom: 8px; }
+.case-head h1 { font: 700 1.9rem/1.4 var(--font-heading); overflow-wrap: anywhere; }
+.case-cause { color: var(--muted); font-size: .96rem; margin-top: 4px; overflow-wrap: anywhere; }
+.case-head .crumbs { font-size: .74rem; margin-top: 8px; overflow-wrap: anywhere; }
+.head-actions { gap: 6px; flex-wrap: wrap; font-size: .8rem; margin-left: 0; }
+.head-actions .btn, .head-actions select { padding: 7px 10px; }
+.detail-tabs { display: flex; gap: 25px; border-bottom: 1px solid var(--line); margin-bottom: 24px; }
+.detail-tab { border: 0; border-bottom: 2px solid transparent; background: none; color: var(--muted); padding: 10px 0 12px; cursor: pointer; font-size: .86rem; }
+.detail-tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+.priority-strip { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+.priority-item { padding: 16px 18px; background: var(--panel); border: 1px solid var(--line-2); border-radius: 8px; min-width: 0; }
+.priority-label { color: var(--muted); font-size: .76rem; display: flex; gap: 7px; align-items: center; }
+.priority-date { font-size: 1.2rem; font-weight: 600; margin: 8px 0 3px; font-variant-numeric: tabular-nums; }
+.priority-item.overdue { border-left: 3px solid var(--danger); }
+.priority-item.soon { border-left: 3px solid var(--warn); }
+.priority-item.overdue .priority-date { color: var(--danger); }
+.priority-item.soon .priority-date { color: var(--warn); }
+.priority-text { color: var(--muted); font-size: .82rem; overflow-wrap: anywhere; }
+.priority-badge { margin-left: auto; color: var(--danger); font-size: .72rem; }
+.priority-item.soon .priority-badge { color: var(--warn); }
+.card { border-color: var(--line-2); border-radius: 8px; padding: 20px 22px; box-shadow: none; min-width: 0; }
+.card-title { font-size: .94rem; margin-bottom: 16px; flex-wrap: wrap; }
+.card-title .right { align-items: center; flex-wrap: wrap; font-size: .76rem; }
+.overview-todos { margin-bottom: 24px; }
+.grid2 { gap: 20px; margin-bottom: 24px; }
+.grid2 > .card + .card { margin-top: 0; }
+.grid2 { grid-template-columns: 1fr 1fr; }
+.fields { grid-template-columns: 72px minmax(0, 1fr); gap: 9px 10px; font-size: .85rem; }
+.fields input { background: transparent; border-bottom-color: var(--line-2); border-radius: 3px; }
+.fields select { width: 100%; min-width: 0; background: var(--panel-2); border: 1px solid var(--line); border-radius: 4px; padding: 5px; }
+.fields .computed { color: var(--gold, var(--accent)); }
+.card-updated { font-size: .72rem; color: var(--muted); margin: 14px 0 0; }
+.todo { padding: 10px 0; gap: 9px; border-bottom: 1px solid var(--line-2); border-radius: 0; font-size: .88rem; }
+.todo:last-child { border-bottom: 0; }
+.todo .txt { min-width: 0; overflow-wrap: anywhere; }
+.todo .due { font-size: .76rem; padding: 1px 6px; }
+.todo .edit, .todo .del { flex: none; width: 25px; height: 25px; padding: 3px; }
+.todo .edit .icon, .todo .del .icon { width: 15px; height: 15px; }
+.todo:focus-within .del, .todo .del:focus { visibility: visible; }
+.todo-add { margin-top: 15px; flex-wrap: wrap; font-size: .8rem; }
+.todo-add input { padding: 8px; }
+.todo-add input[type=text] { flex-basis: 170px; }
+.todo-add input[type=date] { width: 144px; }
+.hearing { flex-wrap: wrap; }
+.todo.hearing .due, .todo.hearing .due.soon, .todo.hearing .due.overdue { flex-basis: 100%; background: transparent; padding: 0; color: var(--gold, var(--accent)); }
+.todo.hearing.past .due { color: var(--muted); background: transparent; }
+.sum-view, .sum-empty { font-size: .9rem; }
+.summary-card { margin-top: 0; }
+#detailNotes .notes { margin-top: 20px; }
+.md { overflow-wrap: anywhere; }
+.md table { display: block; max-width: 100%; overflow-x: auto; }
+#files { overflow-x: auto; }
+.files .act button { visibility: visible; }
+.files { font-size: .86rem; }
+.files tr:focus-within td { background: var(--accent-soft); }
+.claude { min-width: 0; }
+.claude-head { display: grid; grid-template-columns: 1fr auto auto auto; gap: 10px 5px; padding: 20px 16px 14px; }
+.claude-head strong { display: flex; align-items: center; gap: 7px; font-size: 1rem; }
+.claude-head .btn { border: 0; font-size: .74rem; padding: 5px 7px; }
+#closeClaude { width: 27px; padding: 4px; }
+#closeClaude .icon { margin: 0; }
+#scopeSeg { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, 1fr); }
+#scopeSeg button { padding: 7px 4px; font-size: .77rem; }
+.claude-scope { font-size: .75rem; padding: 12px 16px; }
+#claudeCase { margin: 0; }
+.chat { padding: 16px; min-height: 70px; }
+.chat-hint { padding: 18px 5px; border: 0; line-height: 1.9; font-size: .85rem; }
+.quick { padding: 8px 16px 0; }
+.quick button { border-radius: 5px; padding: 6px 9px; font-size: .73rem; background: transparent; }
+.ask { padding: 12px 16px 16px; border-top: 1px solid var(--line-2); margin-top: 12px; }
+.ask textarea { font-size: .84rem; max-height: 180px; }
+.claude-options { font-size: .74rem; color: var(--muted); margin: 7px 0; }
+.claude-options summary { cursor: pointer; padding: 4px 0; }
+.claude-options .ask-row { flex-wrap: wrap; gap: 10px; }
+.ask-row.send-row { justify-content: flex-end; }
+.claude-status { font-size: .73rem; }
+.todos-head h2, .cal-head h2, .agenda h3 { font-family: var(--font-heading); }
+.dlg { max-height: 88vh; overflow-y: auto; border-radius: 12px; }
+@container (max-width: 700px) {
+  .grid2 { grid-template-columns: 1fr; }
+  .case-head { align-items: flex-start; }
+}
+@container (max-width: 460px) {
+  .priority-strip { grid-template-columns: 1fr; gap: 10px; }
+  .card { padding: 16px; }
+  .todo { flex-wrap: wrap; }
+  .todo .txt { flex-basis: 55%; }
+  .todo .due { order: 1; }
+  .todo-add input[type=text] { flex-basis: 100%; }
+  .detail-tabs { gap: 18px; }
+}
+@media (max-width: 1100px) {
+  .layout { grid-template-columns: var(--side-w, 272px) minmax(0, 1fr); }
+  .layout.no-side { grid-template-columns: 28px minmax(0, 1fr); }
+  .layout .claude { top: var(--top-h); width: min(var(--claude-w, 340px), 100vw); box-shadow: -12px 0 32px #0003; }
+  .detail { padding: 24px; }
+}
+@media (max-width: 700px) {
+  :root { --top-h: 64px; }
+  .topbar { gap: 8px; padding: 0 10px; }
+  .tab { padding: 8px; font-size: .82rem; }
+  .layout, .layout.no-claude { grid-template-columns: min(38vw, var(--side-w, 272px)) minmax(0, 1fr); }
+  .side-tools { padding: 14px 8px 8px; }
+  .side-heading { display: none; }
+  .case-list { padding: 0 4px; }
+  .case-item { padding: 11px 9px; }
+  .ci-top { flex-wrap: wrap; }
+  .ci-code { margin-left: 0; flex-basis: 100%; }
+  .ci-sub { flex-wrap: wrap; }
+  .detail { padding: 18px 14px 35px; }
+  .case-head h1 { font-size: 1.6rem; }
+  .case-heading { flex-basis: 100%; }
+  .head-actions .btn, .head-actions select { padding: 6px; font-size: .76rem; }
+  .todos-view { padding: 20px 14px; overflow-x: auto; }
+  .cal-view { overflow-x: auto; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; scroll-behavior: auto !important; } }
+
+/* 放大畫面時 Claude 面板放不下：整個面板可以捲動，輸入框與送出鈕不會被擠到畫面外（不改變正常大小時的外觀） */
+@media (max-height: 760px) {
+  .claude { overflow-y: auto; }
+  .claude > * { flex-shrink: 0; }
+}

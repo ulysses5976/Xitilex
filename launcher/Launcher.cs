@@ -33,7 +33,7 @@ static class Launcher
 #endif
         if (!File.Exists(script))
         {
-            Fail("找不到 " + Path.GetFileName(script) + "。\n請確認雲端硬碟已經同步完「律法夕惕者 Xitilex」資料夾。");
+            Fail("找不到 " + Path.GetFileName(script) + "。\n請確認程式資料夾完整（解壓縮時沒有遺漏檔案；放在雲端硬碟的話，等同步完成再開）。");
             return 1;
         }
 

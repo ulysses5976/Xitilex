@@ -11,8 +11,6 @@
 
 ![今日總覽](docs/images/today.jpg)
 
-▶ **[觀看展示影片（73 秒）](docs/xitilex-demo.mp4)**
-
 https://github.com/user-attachments/assets/08ab6da7-5fcd-414c-a4af-6c8b8434087c
 
 
@@ -95,19 +93,24 @@ Claude 讀完判決，依送達日算出上訴期間末日寫進待辦、在摘�
 - 選用：[Claude Code](https://www.anthropic.com/claude-code)（Claude 相關功能；需要 Claude 訂閱並在命令列登入）
 - 選用：Google 雲端硬碟電腦版（多台電腦共用）、Google Cloud OAuth 用戶端（日曆同步）
 
-## 安裝
+## 下載與安裝
 
-```bat
-git clone https://github.com/ulysses5976/Xitilex.git
-cd Xitilex
-launcher\build.cmd
-```
+| 檔案 | 適用 |
+|---|---|
+| [`Xitilex-v1.0.0-windows.zip`](https://github.com/ulysses5976/Xitilex/releases/latest) | Windows 10／11：解壓縮後執行 `安裝.exe` |
 
-`build.cmd` 用 Windows 內建的 .NET 編譯器產生 `律法夕惕者.exe`（啟動程式）與 `安裝.exe`。接著雙擊 **`安裝.exe`**
-（或執行 `py -3 install.py`），它會：安裝 Python 套件、記下 Python 位置、找案件資料夾、檢查 Claude Code 登入、
-建立桌面與開始功能表捷徑。
+1. 先安裝 [Python 3.10 以上](https://www.python.org/downloads/windows/)（安裝時勾選「Add python.exe to PATH」）。
+2. 到 [Releases](https://github.com/ulysses5976/Xitilex/releases/latest) 下載 zip，解壓縮到你想放程式的地方
+   （要多台電腦共用的話，放在 Google 雲端硬碟裡）。
+3. 雙擊 **`安裝.exe`**：它會安裝 Python 套件、記下 Python 位置、找案件資料夾、檢查 Claude Code 登入，
+   並建立桌面與開始功能表的「律法夕惕者」捷徑。之後從捷徑或 `律法夕惕者.exe` 開啟。
 
-第一次啟動時會從 `config.example.json` 建立 `config.json`，請至少改兩項：
+> [!NOTE]
+> **Windows 可能會跳出「Windows 已保護您的電腦」**
+> 因為程式沒有付費的數位簽章，第一次執行時 Windows SmartScreen 可能會提醒。請按「其他資訊」→「仍要執行」。
+> 原始碼全部公開，不放心的話可以[自行編譯](#自行編譯)。
+
+第一次啟動時會從 `config.example.json` 建立 `config.json`，請用記事本打開，至少改兩項（改完重開程式）：
 
 ```jsonc
 {
@@ -116,7 +119,16 @@ launcher\build.cmd
 }
 ```
 
-不想建 exe 也可以直接執行：`pythonw run.py`（原生視窗）或 `python run.py --browser`（瀏覽器）。
+### 自行編譯
+
+```bat
+git clone https://github.com/ulysses5976/Xitilex.git
+cd Xitilex
+launcher\build.cmd
+```
+
+`build.cmd` 用 Windows 內建的 .NET 編譯器產生 `律法夕惕者.exe`（啟動程式）與 `安裝.exe`，接著同樣執行 `安裝.exe`
+（或 `py -3 install.py`）。不想建 exe 也可以直接執行：`pythonw run.py`（原生視窗）或 `python run.py --browser`（瀏覽器）。
 
 ## 案件資料夾與案件卡
 

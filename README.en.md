@@ -12,7 +12,7 @@ The interface is in Traditional Chinese and the deadline rules follow Taiwanese 
 
 ![Today overview](docs/images/today.jpg)
 
-▶ **[Watch the demo video (73 s)](docs/xitilex-demo.mp4)**
+https://github.com/user-attachments/assets/08ab6da7-5fcd-414c-a4af-6c8b8434087c
 
 > All cases and names in the screenshots are fictional demo data.
 
@@ -47,7 +47,26 @@ workbench, writes changes back to those files, and lets Claude work on the same 
 
 Windows 10/11, Python 3.10+. Optional: Claude Code (logged in), Google Drive for desktop, a Google Cloud OAuth client for calendar sync.
 
-## Install
+## Download & install
+
+| File | For |
+|---|---|
+| [`Xitilex-v1.0.0-windows.zip`](https://github.com/ulysses5976/Xitilex/releases/latest) | Windows 10/11: unzip and run `安裝.exe` (the installer) |
+
+1. Install [Python 3.10+](https://www.python.org/downloads/windows/) (tick "Add python.exe to PATH").
+2. Download the zip from [Releases](https://github.com/ulysses5976/Xitilex/releases/latest) and unzip it where you want to keep the program.
+3. Run **`安裝.exe`** (the installer). It installs the Python packages, finds your case folder, checks the Claude Code
+   login and creates a 律法夕惕者 shortcut on the desktop and Start menu.
+
+> [!NOTE]
+> **Windows may show "Windows protected your PC".**
+> The app is not code-signed, so Windows SmartScreen may warn you the first time you run it. Click **More info → Run anyway**.
+> The full source code is public, so you can also [build it yourself](#build-from-source).
+
+On first run `config.json` is created from `config.example.json`; open it in Notepad and set at least `owner_name` and
+`root` (your case root folder), then restart the program.
+
+### Build from source
 
 ```bat
 git clone https://github.com/ulysses5976/Xitilex.git
@@ -56,7 +75,6 @@ launcher\build.cmd
 安裝.exe
 ```
 
-On first run `config.json` is created from `config.example.json`; set at least `owner_name` and `root` (your case root folder).
 You can also run `pythonw run.py` directly, or `python run.py --browser`.
 
 See the Chinese README for the case-card format, Claude permissions, Google Calendar setup and multi-PC use.

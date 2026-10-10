@@ -5,7 +5,8 @@
 **A case workbench for lawyers in Taiwan.** Xitilex reads the case folders you already keep on your computer
 (or Google Drive) and turns them into a workbench: case status, hearings and deadlines, to-dos, case files,
 a statutory-deadline calculator, new-document alerts, conflict-of-interest checks, Google Calendar sync —
-and lets you ask [Claude Code](https://www.anthropic.com/claude-code) to read and organize a case right inside it.
+and lets you ask [Claude Code](https://www.anthropic.com/claude-code) to read and organize a case right inside it —
+with your own skills, MCP servers and claude.ai connectors available, not just a chat box.
 
 The interface is in Traditional Chinese and the deadline rules follow Taiwanese procedural law.
 [中文說明](README.md)
@@ -30,6 +31,7 @@ workbench, writes changes back to those files, and lets Claude work on the same 
 - **New-document alerts** — notices new files in a case folder; one click asks Claude to read a judgment or notice and record hearings and deadlines.
 - **Conflict check** — matches clients, opposing parties and case notes across all cases when opening a new case.
 - **Claude Code integration** — works with the case folder as its working directory, or across a filtered list / all cases. Conservative by default: no deleting, moving or renaming files unless you explicitly allow it for the current case.
+- **Your whole Claude toolkit, inside each case** — Xitilex drives the Claude Code you have already set up, so most of your **skills, MCP servers and claude.ai connectors** (Gmail, Google Calendar, Google Drive, case-law search…) work right in the case panel. The "工具" (Tools) dialog lists what is available. Actions with outside effects — sending mail, changing calendar events, sharing or deleting files — are blocked by default.
 - **Google Calendar** — one-way sync of hearings and deadlines; rescheduling updates the original event.
 - **Native window** — tabs, multiple windows, zoom, collapsible sidebar, several themes. Works across several PCs via Google Drive.
 

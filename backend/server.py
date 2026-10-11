@@ -597,7 +597,7 @@ def claude_capabilities():
 def claude_capabilities_refresh():
     """重新探測（約十幾秒）：順便確認命令列 Claude 的登入是否有效。"""
     caps = claude_runner.probe_capabilities(CFG, CFG["root"])
-    diag.record_capabilities()
+    diag.record_capabilities(CFG)
     return caps
 
 
@@ -613,7 +613,7 @@ def _probe_on_start():
             claude_runner.probe_capabilities(CFG, CFG["root"])
         except Exception:
             pass
-    diag.record_capabilities()
+    diag.record_capabilities(CFG)
 
 
 @app.on_event("startup")

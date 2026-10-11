@@ -102,7 +102,7 @@ Claude 讀完判決，依送達日算出上訴期間末日寫進待辦、在摘�
 
 | 檔案 | 適用 |
 |---|---|
-| [`Xitilex-v1.0.0-windows.zip`](https://github.com/ulysses5976/Xitilex/releases/latest) | Windows 10／11：解壓縮後執行 `安裝.exe` |
+| [`Xitilex-v1.0.1-windows.zip`](https://github.com/ulysses5976/Xitilex/releases/latest) | Windows 10／11：解壓縮後執行 `安裝.exe` |
 
 1. 先安裝 [Python 3.10 以上](https://www.python.org/downloads/windows/)（安裝時勾選「Add python.exe to PATH」）。
 2. 到 [Releases](https://github.com/ulysses5976/Xitilex/releases/latest) 下載 zip，解壓縮到你想放程式的地方
@@ -223,6 +223,13 @@ launcher\build.cmd
 把程式資料夾放在 Google 雲端硬碟裡，每台電腦各執行一次 `安裝.exe` 即可共用：
 案件卡、設定、Claude 對話紀錄（`data/chats/`）會同步；Google 授權與本機路徑（`%LOCALAPPDATA%\casedesk\local.json`）每台各自一份。
 `config.json` 的路徑可用 `{drive}` 代表雲端硬碟根目錄，各台使用者名稱不同也沒關係。
+
+某台電腦出狀況時：
+- **只能用瀏覽器開**：這台還沒裝好原生視窗元件（pywebview），程式會跳提示；在這台執行一次 `安裝.exe` 即可。
+- **Claude「工具」裡看不到自己的 skill**：這台的命令列 Claude 沒登入或登入失效（帳號裡的 skill 與雲端連接器要登入後才載得到）。
+  開一般 PowerShell 執行 `claude` → `/login`，再回系統按「重新檢查」。
+- 每台電腦開程式時會寫一份診斷報告 `data/diag/<電腦名稱>.json`（只記元件與登入狀態，不記案件內容），
+  跟著雲端硬碟同步，在另一台就能看到出問題那台的狀況。
 
 ## 隱私
 

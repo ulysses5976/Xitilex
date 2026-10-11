@@ -4,6 +4,7 @@ data/credentials.json
 data/chats/
 data/inbox/
 data/holidays/extra.json
+data/diag/
 *.saving
 
 # 編譯產物（用 launcher\build.cmd 產生）

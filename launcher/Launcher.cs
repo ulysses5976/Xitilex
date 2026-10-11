@@ -14,7 +14,7 @@ using System.Windows.Forms;
 [assembly: System.Reflection.AssemblyTitle("律法夕惕者 Xitilex")]
 [assembly: System.Reflection.AssemblyProduct("律法夕惕者 Xitilex")]
 [assembly: System.Reflection.AssemblyCopyright("© 2026 無名小律師（楊朝淵律師）")]
-[assembly: System.Reflection.AssemblyVersion("1.0.0.0")]
+[assembly: System.Reflection.AssemblyVersion("1.0.1.0")]
 
 static class Launcher
 {

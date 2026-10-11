@@ -117,6 +117,40 @@ def _already_running(base: str) -> bool:
         return False
 
 
+def _webview_available() -> bool:
+    try:
+        import webview  # noqa: F401
+        return True
+    except ImportError:
+        return False
+
+
+def _handover(base: str) -> bool:
+    """請已在跑的瀏覽器模式伺服器結束，等它讓出連接埠。成功回傳 True。"""
+    try:
+        req = urllib.request.Request(base + "api/app/handover", data=b"{}",
+                                     headers={"Content-Type": "application/json"}, method="POST")
+        if not json.loads(urllib.request.urlopen(req, timeout=5).read()).get("ok"):
+            return False
+    except Exception:
+        return False
+    for _ in range(40):                          # 最多等 8 秒
+        time.sleep(0.2)
+        if not _already_running(base):
+            time.sleep(0.5)
+            return True
+    return False
+
+
+def _record_launch(mode: str, reason: str, cfg: dict):
+    """寫診斷報告（data/diag/<電腦名稱>.json），其他電腦也看得到這台怎麼開的、為什麼。"""
+    try:
+        from backend import diag
+        diag.record_launch(mode, reason, cfg)
+    except Exception as e:
+        print("診斷報告寫入失敗：%r" % e)
+
+
 def _start_server(cfg: dict):
     import uvicorn
     from backend.server import app
@@ -273,26 +307,41 @@ def main():
             ok = json.loads(urllib.request.urlopen(req, timeout=5).read()).get("ok")
         except Exception:
             ok = False
-        if not ok:                              # 已開著的是瀏覽器模式
+        if ok:
+            return
+        # 已開著的是瀏覽器模式（關掉瀏覽器，背景伺服器也不會結束）。這次能開原生視窗的話，
+        # 請舊的伺服器結束，由這次接手；不能的話照舊用瀏覽器開。
+        if "--browser" in sys.argv or not _webview_available() or not _handover(base):
             import webbrowser
             webbrowser.open(base)
-        return
+            return
 
-    if "--browser" not in sys.argv:
+    reason = ""
+    if "--browser" in sys.argv:
+        reason = "以 --browser 參數啟動（除錯模式）"
+    else:
         try:
             import webview  # noqa: F401
-        except ImportError:
-            print("沒有安裝 pywebview，改用瀏覽器開啟（執行「安裝」可補裝）")
+        except ImportError as e:
+            reason = "這台電腦沒有安裝原生視窗元件 pywebview（%s）" % e
+            print(reason)
+            _message("這台電腦還沒裝好「原生視窗元件」（pywebview），這次先用瀏覽器開啟。\n\n"
+                     "請到程式資料夾雙擊「安裝.exe」補裝，之後就會用獨立視窗開啟。")
         else:
             try:
+                _record_launch("原生視窗", "", cfg)
                 run_windowed(cfg, base)
                 return
             except Exception as e:
+                reason = "原生視窗開不起來：%r" % e
                 _message("原生視窗開不起來，改用瀏覽器開啟。\n\n原因：%r" % e)
 
     # 瀏覽器模式（備用）
     import webbrowser
+    _record_launch("瀏覽器", reason, cfg)
     server = _start_server(cfg)
+    from backend import server as srv
+    srv.WINDOW_HOOK["quit"] = lambda: setattr(server, "should_exit", True)   # 讓之後的原生視窗接手
     webbrowser.open(base)
     print("開啟網址：", base, "（關掉這個視窗就等於關閉系統）")
     try:

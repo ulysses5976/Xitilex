@@ -17,7 +17,7 @@ from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from . import card, claude_runner, conflict, gcal, holidays, inbox, newcase, scanner, settings, titles
+from . import card, claude_runner, conflict, diag, gcal, holidays, inbox, newcase, scanner, settings, titles
 
 app = FastAPI(title="律法夕惕者 Xitilex")
 CFG = settings.load()
@@ -596,15 +596,24 @@ def claude_capabilities():
 @app.post("/api/claude/capabilities/refresh")
 def claude_capabilities_refresh():
     """重新探測（約十幾秒）：順便確認命令列 Claude 的登入是否有效。"""
-    return claude_runner.probe_capabilities(CFG, CFG["root"])
+    caps = claude_runner.probe_capabilities(CFG, CFG["root"])
+    diag.record_capabilities()
+    return caps
+
+
+CAPS_MAX_AGE = 3 * 86400               # 可用工具清單超過三天就在背景重查
 
 
 def _probe_on_start():
-    if not claude_runner.load_capabilities():
+    """這台電腦還沒查過、上次查失敗（例如當時 Claude 還沒登入）、或已經超過三天，就在背景重查一次。
+    清單存在各台電腦本機，不會跟著雲端硬碟同步，所以每台都要自己查。"""
+    caps = claude_runner.load_capabilities()
+    if not caps or not caps.get("ok") or time.time() - float(caps.get("at") or 0) > CAPS_MAX_AGE:
         try:
             claude_runner.probe_capabilities(CFG, CFG["root"])
         except Exception:
             pass
+    diag.record_capabilities()
 
 
 @app.on_event("startup")
@@ -689,7 +698,17 @@ def index():
 # 以原生視窗執行時，run.py 會把「開新視窗」的函式掛在 WINDOW_HOOK。
 # 一般瀏覽器模式沒有掛，前端就改用瀏覽器自己的新視窗。
 
-WINDOW_HOOK = {"new": None}
+WINDOW_HOOK = {"new": None, "quit": None}
+
+
+@app.post("/api/app/handover")
+def app_handover():
+    """新啟動的程式要用原生視窗開，但這台已經有一個瀏覽器模式的伺服器在跑（關掉瀏覽器它也不會結束）：
+    請這個舊的結束，由新的接手。原生視窗模式不交接（直接開新視窗即可）。"""
+    if WINDOW_HOOK["new"] or not WINDOW_HOOK["quit"]:
+        return {"ok": False}
+    threading.Timer(0.5, WINDOW_HOOK["quit"]).start()
+    return {"ok": True}
 
 
 class WindowIn(BaseModel):

@@ -53,7 +53,7 @@ Windows 10/11, Python 3.10+. Optional: Claude Code (logged in), Google Drive for
 
 | File | For |
 |---|---|
-| [`Xitilex-v1.0.0-windows.zip`](https://github.com/ulysses5976/Xitilex/releases/latest) | Windows 10/11: unzip and run `安裝.exe` (the installer) |
+| [`Xitilex-v1.0.1-windows.zip`](https://github.com/ulysses5976/Xitilex/releases/latest) | Windows 10/11: unzip and run `安裝.exe` (the installer) |
 
 1. Install [Python 3.10+](https://www.python.org/downloads/windows/) (tick "Add python.exe to PATH").
 2. Download the zip from [Releases](https://github.com/ulysses5976/Xitilex/releases/latest) and unzip it where you want to keep the program.
